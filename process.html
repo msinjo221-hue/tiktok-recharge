@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment Success - TikTok</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background-color: #ffffff;
+      font-family: 'Inter', sans-serif;
+      color: #161823;
+      text-align: center;
+    }
+
+    .success-icon {
+      width: 90px;
+      height: 90px;
+      background-color: #E8FFF3;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: popIn 0.4s ease-out;
+    }
+
+    .success-icon::before {
+      content: "✔";
+      font-size: 42px;
+      color: #00D27A;
+      font-weight: 700;
+    }
+
+    @keyframes popIn {
+      0% { transform: scale(0.3); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    h2 {
+      font-size: 22px;
+      font-weight: 700;
+      margin-top: 24px;
+      margin-bottom: 8px;
+    }
+
+    .desc {
+      font-size: 15px;
+      color: #666;
+      line-height: 1.5;
+      max-width: 280px;
+    }
+
+    .desc strong {
+      color: #161823;
+    }
+
+    .btn {
+      margin-top: 40px;
+      background-color: #FE2C55;
+      color: white;
+      border: none;
+      padding: 14px 32px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .btn:hover {
+      background-color: #e8264d;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="success-icon"></div>
+
+  <h2>Successful recharge!</h2>
+  <div class="desc" id="message">
+    <!-- Pesan dinamis akan diisi lewat JS -->
+  </div>
+
+  <button class="btn" onclick="window.location.href='index.html'">Go back</button>
+
+  <script>
+    // Ambil parameter dari URL, contoh ?username=sar777z&coins=100000
+    const params = new URLSearchParams(window.location.search);
+    const username = params.get("username") || "user";
+    const coins = params.get("coins") || "0";
+
+    // Format angka koin agar ada tanda koma (misalnya 100,000)
+    const formattedCoins = Number(coins).toLocaleString();
+
+    // Tampilkan teks dinamis
+    document.getElementById("message").innerHTML = `
+      ${formattedCoins} Coins were sent to <strong>@${username}</strong><br>
+      This operation has been completed. It will be processed within 24 hours!
+    `;
+  </script>
+</body>
+</html>

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Recharge Success</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: #fff;
+      color: #111;
+    }
+    .success-container {
+      text-align: center;
+    }
+    .checkmark {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background-color: #e9fff1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+    }
+    .checkmark svg {
+      width: 38px;
+      height: 38px;
+      color: #1dbf73;
+    }
+    h2 {
+      font-size: 22px;
+      margin: 10px 0 8px;
+      font-weight: 700;
+    }
+    p {
+      font-size: 15px;
+      margin: 3px 0;
+      color: #333;
+    }
+    .muted {
+      color: #777;
+      font-size: 14px;
+      margin-top: 6px;
+    }
+    .btn {
+      background-color: #fe2c55;
+      color: white;
+      border: none;
+      padding: 10px 26px;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 24px;
+      transition: background 0.2s ease;
+    }
+    .btn:hover {
+      background-color: #e6264d;
+    }
+  </style>
+</head>
+<body>
+  <div class="success-container">
+    <div class="checkmark">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+      </svg>
+    </div>
+
+    <h2>Successful recharge!</h2>
+    <p><span id="successCoins">0</span> Coins were sent to <span id="successUser">@user</span></p>
+    <p class="muted">This operation has been completed. It will be processed within 24 hours!</p>
+
+    <button class="btn" id="goBackBtn">Go back</button>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Ambil data dari localStorage
+      const user = localStorage.getItem('recharge_username') || 'user';
+      const coins = localStorage.getItem('recharge_coins') || '0';
+
+      // Tampilkan ke halaman
+      document.getElementById('successUser').textContent = '@' + user;
+      document.getElementById('successCoins').textContent = parseInt(coins).toLocaleString();
+
+      // Tombol kembali ke index
+      document.getElementById('goBackBtn').addEventListener('click', () => {
+        window.location.href = 'index.html';
+      });
+    });
+  </script>
+</body>
+</html>

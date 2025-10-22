@@ -1,0 +1,478 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1 maximum-scale=1" />
+  <title>Get Coins — Tiktok Recharge</title>
+  <style>
+    /* Font stack (use local TikTok/Proxima Nova if available) */
+    body{font-family:"TikTok Sans","Proxima Nova",Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial; background:#fafafa;color:#111;margin:0}
+    a{color:inherit}
+    /* Topbar */
+    header.topbar{display:flex;align-items:center;justify-content:space-between;padding:10px 22px;border-bottom:1px solid #eee;background:#fff;position:sticky;top:0;z-index:100}
+    .topbar .left{display:flex;align-items:center;gap:10px}
+    .logo{width:26px;height:26px;object-fit:contain}
+    .site-title{font-weight:700;font-size:16px}
+    .topbar .right{display:flex;align-items:center;gap:12px}
+    .icon{width:20px;height:20px;object-fit:contain;opacity:0.95}
+
+    /* Layout */
+    .wrap{max-width:980px;margin:26px auto;padding:0 18px}
+    .card{background:#fff;border-radius:10px;padding:18px;border:1px solid #eee;box-shadow:0 6px 20px rgba(0,0,0,0.03)}
+    .title-row{display:flex;align-items:flex-start;gap:8px;justify-content:space-between}
+    .title-left{flex:1}
+    .title{font-size:20px;margin:0 0 6px 0;font-weight:800}
+    .tx-link{color:#fe2c55;font-weight:600;font-size:13px}
+
+    .profile-mini{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+    .meta{display:flex;align-items:center;gap:8px;color:#666;font-size:14px}
+    .mini-icon{width:18px;height:18px}
+    .balance{font-weight:700;color:#333;font-size:14px;margin-top:4px}
+
+    /* input */
+    .recipient{margin:14px 0}
+    .recipient input{width:100%;max-width:640px;padding:12px;border-radius:10px;border:1px solid #eaeef0;background:#fbfdff;font-size:14px}
+
+    /* coin grid */
+    .coin-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:12px}
+    @media(max-width:980px){.coin-grid{grid-template-columns:repeat(2,1fr)}}
+    .coin-item{display:flex;justify-content:space-between;align-items:center;padding:14px;border-radius:10px;border:1px solid #f0f0f0;background:#fff;cursor:pointer;transition:transform .12s,box-shadow .12s}
+    .coin-item:hover{transform:translateY(-4px);box-shadow:0 10px 26px rgba(0,0,0,0.04)}
+    .coin-left{display:flex;align-items:center;gap:12px}
+    .coin-icon{width:36px;height:36px;object-fit:contain}
+    .coin-amount{font-weight:800}
+    .coin-price{font-size:13px;color:#666}
+    .coin-item.selected{border:2px solid #fe2c55;box-shadow:0 8px 24px rgba(254,44,85,0.06)}
+    .custom-card{display:flex;align-items:center;justify-content:center;font-weight:700}
+
+    /* promo */
+    .promo-list{margin-top:16px;display:flex;flex-direction:column;gap:12px}
+    .promo-card{display:flex;align-items:center;gap:12px;padding:12px;border-radius:10px;background:#fff;border:1px solid #f0f0f0}
+    .promo-card .p-icon{width:56px;height:56px;border-radius:8px;background:#fbfbfd;display:flex;align-items:center;justify-content:center}
+    .promo-card .title{font-weight:800}
+    .promo-card .desc{color:#666;font-size:13px}
+
+    /* payment bottom row */
+    .payment-row{margin-top:18px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .display-price{font-weight:800;font-size:18px}
+    .btn-primary{background:#fe2c55;color:#fff;padding:10px 18px;border-radius:10px;border:none;cursor:pointer;font-weight:800}
+
+    footer{margin:26px 0;text-align:center;color:#999;font-size:13px}
+
+    /* Order Summary Modal (centered) */
+    .overlay-blur{position:fixed;inset:0;background:rgba(0,0,0,0.35);backdrop-filter:blur(2px);display:none;align-items:center;justify-content:center;z-index:400}
+    .overlay-blur.show{display:flex}
+    .order-card{width:100%;max-width:760px;background:#fff;border-radius:10px;padding:20px;border:1px solid #eee;box-shadow:0 18px 60px rgba(0,0,0,0.18)}
+    .order-row{display:flex;gap:12px;align-items:center}
+    .order-head{display:flex;align-items:center;justify-content:space-between}
+    .order-title{font-size:20px;font-weight:800}
+    .secure{color:#28a745;font-size:13px;margin-left:8px}
+
+    .order-section{border-top:1px solid #f3f3f3;margin-top:14px;padding-top:14px}
+    .order-label{font-weight:700;margin-bottom:6px}
+    .order-total{display:flex;align-items:center;justify-content:space-between;font-size:18px;font-weight:800;padding:10px 0}
+
+    /* payment methods list style like TikTok's order summary */
+    .pm-list{display:flex;flex-direction:column;gap:10px;margin-top:10px}
+    .pm-card{display:flex;align-items:center;justify-content:space-between;padding:12px;border-radius:8px;border:1px solid #f0f0f0;background:#fff;cursor:pointer}
+    .pm-left{display:flex;align-items:center;gap:12px}
+    .pm-logos{display:flex;gap:6px;align-items:center}
+    .pm-radio{margin-right:8px}
+    .pay-actions{display:flex;justify-content:flex-end;margin-top:16px;gap:10px;align-items:center}
+
+    .btn-disabled{opacity:0.45;pointer-events:none}
+
+    /* pin overlay on top of modal */
+    .pin-overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.55);z-index:650}
+    .pin-overlay.show{display:flex}
+    .pin-box{background:#fff;padding:18px;border-radius:12px;width:360px;text-align:center;box-shadow:0 12px 28px rgba(0,0,0,0.18)}
+    .pin-row{display:flex;justify-content:center;gap:8px;margin-top:12px}
+    .pin-row input{width:44px;height:52px;text-align:center;font-size:20px;border-radius:8px;border:1px solid #e6e6e6}
+
+    /* loading spinner (TikTok colors) */
+    .tiktok-loader{width:72px;height:72px;border-radius:50%;position:relative}
+    .tiktok-loader::before,.tiktok-loader::after{content:"";position:absolute;inset:0;border-radius:50%}
+    .tiktok-loader::before{box-shadow:0 0 18px rgba(0,0,0,0.06);border:6px solid rgba(0,0,0,0.06)}
+    .tiktok-loader::after{border:6px solid transparent;border-top-color:#00f0ff;border-right-color:#fe2c55;animation:spin 1s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    /* small helpers */
+    .muted{color:#666;font-size:13px}
+    .right-ghost{color:#999;font-weight:700}
+  </style>
+</head>
+<body>
+
+  <!-- topbar -->
+  <header class="topbar">
+    <div class="left">
+      <img class="logo" src="TIKTOK_LG-removebg-preview.png" style="width: 37px; height: auto;" alt="TikTok logo">
+      <div class="site-title">TikTok</div>
+    </div>
+    <div class="right">
+      <img class="icon" src="pesan.png" style="width: 45px; height: auto;" alt="Chat">
+      <img class="icon" src="inbox.png" style="width: 30px; height: auto;" alt="Notifications">
+      <img class="icon" src="Profil.png" style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover;" alt="User">
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="card">
+      <div class="title-row">
+        <div class="title-left">
+          <h1 class="title">Get Coins</h1>
+          <a class="tx-link" href="#">View transaction history</a>
+
+          <div class="user-info">
+  <div class="meta">
+    <img class="mini-icon" src="Profil.png" style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover;" alt="Profile">
+    <div class="muted">@dubaii280</div>
+  </div>
+  <div class="balance" id="globalBalance">
+    <img src="./coin.png" style="width: 22px; height: auto; position: relative; top: 7px;" alt="coin">
+    <span id="balanceValue">300.115.919</span>
+  </div>
+</div>
+
+<!-- Input di bawah saldo -->
+<div class="recipient">
+  <input id="recipientName" placeholder="Enter recipient name">
+</div>
+        </div>
+      </div>
+
+      <!-- coin packages -->
+      <section style="margin-top:6px">
+        <h2 style="font-size:16px;margin:6px 0 8px 0">Choose a package</h2>
+        <div class="coin-grid" id="coinGrid">
+          <div class="coin-item" data-coins="70" data-price="0.74">
+            <div class="coin-left"><img class="coin-icon" src="coin.png" alt=""><div><div class="coin-amount">70</div><div class="coin-price">$0.74</div></div></div>
+            <div class="muted"></div>
+          </div>
+          <div class="coin-item" data-coins="350" data-price="3.70">
+            <div class="coin-left"><img class="coin-icon" src="coin.png" alt=""><div><div class="coin-amount">350</div><div class="coin-price">$3.70</div></div></div>
+            <div class="muted"></div>
+          </div>
+          <div class="coin-item" data-coins="700" data-price="7.40">
+            <div class="coin-left"><img class="coin-icon" src="coin.png" alt=""><div><div class="coin-amount">700</div><div class="coin-price">$7.40</div></div></div>
+            <div class="muted"></div>
+          </div>
+          <div class="coin-item" data-coins="1400" data-price="14.80">
+            <div class="coin-left"><img class="coin-icon" src="coin.png" alt=""><div><div class="coin-amount">1,400</div><div class="coin-price">$14.80</div></div></div>
+            <div class="muted"></div>
+          </div>
+          <div class="coin-item" data-coins="3500" data-price="37.00">
+            <div class="coin-left"><img class="coin-icon" src="coin.png" alt=""><div><div class="coin-amount">3,500</div><div class="coin-price">$37.00</div></div></div>
+            <div class="muted"></div>
+          </div>
+          <div class="coin-item selected" data-coins="7000" data-price="74.00">
+            <div class="coin-left"><img class="coin-icon" src="coin.png" alt=""><div><div class="coin-amount">7,000</div><div class="coin-price">$74.00</div></div></div>
+            <div class="muted"></div>
+          </div>
+          <div class="coin-item" data-coins="10000" data-price="148.00">
+            <div class="coin-left"><img class="coin-icon" src="coin.png" alt=""><div><div class="coin-amount">10,000</div><div class="coin-price">$148.00</div></div></div>
+            <div class="muted"></div>
+          </div>
+          <div id="openCustom" class="coin-item custom-card">
+            <img class="coin-icon" src="coin.png" alt=""><div class="coin-amount">Custom</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- promo -->
+      <div class="promo-list">
+        <div class="promo-card">
+          <div class="p-icon"><img src="promo-removebg-preview.png" alt="" style="width:48px"></div>
+          <div style="flex:1">
+            <div class="title">Invite and Get Reward</div>
+            <div class="desc">Learn about this new feature!</div>
+          </div>
+          <div style="color:#999;font-weight:700">&gt;</div>
+        </div>
+
+        <div class="promo-card">
+          <div class="p-icon"><img src="promo2-removebg-preview.png" alt="" style="width:48px"></div>
+          <div style="flex:1">
+            <div class="title">Add this page to your home screen</div>
+            <div class="desc">Access with one tap</div>
+          </div>
+          <div style="color:#fe2c55;font-weight:700">Add</div>
+        </div>
+      </div>
+
+      <!-- payment row -->
+      <div class="payment-row">
+        <div>
+          <div class="muted">Payment methods</div>
+          <div id="displayPrice" class="display-price">$74.00</div>
+        </div>
+        <div>
+          <button id="rechargeBtn" class="btn-primary">Recharge</button>
+        </div>
+      </div>
+
+    </div>
+
+    <footer><small>payment system</small></footer>
+  </main>
+
+  <!-- ORDER SUMMARY (center modal) -->
+  <div id="orderOverlay" class="overlay-blur" aria-hidden="true">
+    <div class="order-card" role="dialog" aria-modal="true" aria-labelledby="orderTitle">
+      <div class="order-head">
+        <div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <div class="order-title" id="orderTitle">Order summary</div>
+            <div class="secure">Your info is private and secure.</div>
+          </div>
+        </div>
+        <div style="cursor:pointer;font-size:20px" id="closeOrder">✕</div>
+      </div>
+
+      <!-- Account / Total -->
+      <div class="order-section">
+        <div class="order-row">
+          <div style="flex:1">
+            <div class="order-label">Account</div>
+            <div class="muted" id="orderAccount">@syekhali</div>
+          </div>
+          <div style="text-align:right">
+            <div class="order-label">Total</div>
+            <div style="font-weight:800;font-size:18px">$<span id="orderTotalPrice">74.00</span></div>
+            <div class="muted" id="orderTotalCoins">7,000 Coins</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Payment method -->
+<div class="order-section">
+  <div class="order-label">Payment method</div>
+
+  <div class="pm-list" id="pmList">
+
+    <!-- Add Credit/Debit Card -->
+    <label class="pm-card" data-method="card">
+      <div class="pm-left">
+        <input class="pm-radio" type="radio" name="pm_order" value="card">
+        <div>
+          <div style="font-weight:700">Add Credit Or Debit Card</div>
+          <div class="muted" style="font-size:13px">
+            Visa, Mastercard, JCB, American Express
+          </div>
+        </div>
+      </div>
+      <div class="pm-logos">
+        <img src="Visa LLG.png" style="width:36px">
+        <img src="Mastercard-removebg-preview.png" style="width:36px">
+        <img src="jcb.png" style="width:36px">
+        <img src="Amexs.png" style="width:40px">
+      </div>
+    </label>
+
+    <!-- Hidden VISA Option (appears after clicking Add Card) -->
+    <label class="pm-card" data-method="visa-card" id="savedVisa"
+           style="display:none;margin-left:32px;border:1px solid #e6e6e6">
+      <div class="pm-left">
+        <input class="pm-radio" type="radio" name="pm_order" value="visa6453">
+        <div>
+          <div style="font-weight:700">VISA ************6453</div>
+        </div>
+      </div>
+      <div><img src="Visa LLG.png" style="width:40px"></div>
+    </label>
+
+    <!-- PayPal -->
+    <label class="pm-card" data-method="paypal">
+      <div class="pm-left">
+        <input class="pm-radio" type="radio" name="pm_order" value="paypal">
+        <div>
+          <div style="font-weight:700">PayPal</div>
+          <div class="muted" style="font-size:13px">Use your PayPal account</div>
+        </div>
+      </div>
+      <div style="width:48px;text-align:right">
+        <img src="PayPal (1).png" style="width:40px;height:auto;object-fit:contain" alt="">
+      </div>
+    </label>
+
+    <!-- Apple Pay -->
+    <label class="pm-card" data-method="applepay">
+      <div class="pm-left">
+        <input class="pm-radio" type="radio" name="pm_order" value="applepay">
+        <div>
+          <div style="font-weight:700">Apple Pay</div>
+          <div class="muted" style="font-size:13px">Use your Apple Pay account</div>
+        </div>
+      </div>
+      <div style="width:48px;text-align:right">
+        <img src="Apple pay.png" style="width:50px;height:auto;object-fit:contain" alt="">
+      </div>
+    </label>
+
+  </div> <!-- end .pm-list -->
+
+  <div class="pay-actions">
+    <div style="flex:1"></div>
+    <button id="payNow" class="btn-primary" onclick="goToProcess()">Pay now</button>
+  </div>
+      </div>
+    </div>
+  </div>
+    </div>
+  </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const coinGrid = document.getElementById('coinGrid');
+  const coinItems = document.querySelectorAll('.coin-item');
+  const displayPrice = document.getElementById('displayPrice');
+  const recipientInput = document.getElementById('recipientName');
+  const rechargeBtn = document.getElementById('rechargeBtn');
+  const globalBalanceEl = document.getElementById('balanceValue');
+  const orderOverlay = document.getElementById('orderOverlay');
+  const closeOrder = document.getElementById('closeOrder');
+  const orderTotalPrice = document.getElementById('orderTotalPrice');
+  const orderTotalCoins = document.getElementById('orderTotalCoins');
+  const orderAccount = document.getElementById('orderAccount');
+  const payNow = document.getElementById('payNow');
+  const pmList = document.getElementById('pmList');
+  const savedVisa = document.getElementById('savedVisa');
+
+  let selectedCoins = 7000;
+  let selectedPrice = 74.00;
+  let balance = parseInt(String(globalBalanceEl.textContent||'15919').replace(/[^\d]/g,''),10) || 0;
+
+  const fmt = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+  // === Load saldo dari localStorage
+  const savedBalance = localStorage.getItem('user_balance');
+  if (savedBalance !== null) {
+    balance = parseInt(savedBalance, 10);
+    globalBalanceEl.textContent = fmt(balance);
+  }
+
+  // === Cek query string balance (jika ada)
+  const qs = new URLSearchParams(window.location.search);
+  if (qs.has('balance')) {
+    const b = parseInt(qs.get('balance')||'',10);
+    if (!isNaN(b)) {
+      balance = b;
+      globalBalanceEl.textContent = fmt(balance);
+    }
+  }
+
+  // === Inisialisasi tampilan harga awal
+  const sel = document.querySelector('.coin-item.selected');
+  if (sel) {
+    selectedCoins = parseInt(sel.dataset.coins||'0',10);
+    selectedPrice = parseFloat(sel.dataset.price||'0');
+  }
+  displayPrice.textContent = `$${selectedPrice.toFixed(2)}`;
+
+  // === Pilih jumlah koin
+  coinItems.forEach(card => {
+    card.addEventListener('click', () => {
+      if (card.id === 'openCustom') { openCustomModal(); return; }
+      coinItems.forEach(c => c.classList.remove('selected'));
+      card.classList.add('selected');
+      selectedCoins = parseInt(card.dataset.coins||'0',10);
+      selectedPrice = parseFloat(card.dataset.price||'0');
+      displayPrice.textContent = `$${selectedPrice.toFixed(2)}`;
+    });
+  });
+
+    function openCustomModal(){
+    const modal = document.createElement('div');
+    modal.style = "position:fixed;inset:0;background:rgba(0,0,0,0.45);display:flex;align-items:flex-end;justify-content:center;z-index:600;";
+    modal.innerHTML = `
+      <div style="background:#fff;width:100%;max-width:480px;border-radius:12px 12px 0 0;padding:18px;text-align:center;">
+        <div style="width:40px;height:4px;background:#eee;border-radius:8px;margin:0 auto 12px;"></div>
+        <h3>Custom Coin</h3>
+        <input id="customCoinInput" type="number" placeholder="Enter coin amount..." style="width:80%;margin:12px auto;padding:10px;border-radius:8px;border:1px solid #ddd;text-align:center;font-size:16px;">
+        <div style="display:flex;justify-content:center;gap:10px;margin-top:14px;">
+          <button id="cancelCustom" style="padding:8px 14px;border:1px solid #ccc;border-radius:8px;background:#fff;cursor:pointer;">Cancel</button>
+          <button id="okCustom" style="padding:8px 14px;background:#fe2c55;color:#fff;border:none;border-radius:8px;cursor:pointer;">OK</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+
+    modal.querySelector('#cancelCustom').onclick = () => modal.remove();
+    modal.querySelector('#okCustom').onclick = () => {
+      const val = parseInt(modal.querySelector('#customCoinInput').value||'0',10);
+      if (!val || val <= 0) { alert('Enter a valid coin amount!'); return; }
+      selectedCoins = val;
+      selectedPrice = parseFloat((val * 0.0106).toFixed(2));
+      displayPrice.textContent = `$${selectedPrice.toFixed(2)}`;
+      coinItems.forEach(c => c.classList.remove('selected'));
+      const customCard = document.getElementById('openCustom');
+      if (customCard) customCard.classList.add('selected');
+      modal.remove();
+    };
+  }
+
+  // === Buka Order Summary
+  rechargeBtn.addEventListener('click', () => {
+    if (!recipientInput.value.trim()) {
+      alert('Please enter recipient name.');
+      return;
+    }
+    orderAccount.textContent = recipientInput.value.trim();
+    orderTotalPrice.textContent = selectedPrice.toFixed(2);
+    orderTotalCoins.textContent = `${fmt(selectedCoins)} Coins`;
+    orderOverlay.classList.add('show');
+  });
+
+  closeOrder.addEventListener('click', () => {
+    orderOverlay.classList.remove('show');
+  });
+
+  // === Pilih metode pembayaran
+  pmList.querySelectorAll('.pm-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const radio = card.querySelector('input[type="radio"]');
+      if (radio) radio.checked = true;
+      payNow.classList.remove('btn-disabled');
+      if (card.dataset.method === 'card') {
+        savedVisa.style.display = 'flex';
+      }
+    });
+  });
+
+  // === Tombol Bayar (tanpa PIN)
+  payNow.addEventListener('click', () => {
+    if (payNow.classList.contains('btn-disabled')) return;
+    const pmChecked = document.querySelector('input[name="pm_order"]:checked');
+    if (!pmChecked) { alert('Please choose a payment method.'); return; }
+    handlePayment();
+  });
+
+  // === Fungsi untuk memproses pembayaran
+  function handlePayment() {
+    const newBalance = balance - selectedCoins;
+    if (newBalance < 0) {
+      alert('Insufficient balance!');
+      return;
+    }
+
+    // Simpan data transaksi
+    localStorage.setItem('recharge_username', recipientInput.value.trim());
+    localStorage.setItem('recharge_coins', selectedCoins);
+    localStorage.setItem('user_balance', newBalance);
+
+    const qs = new URLSearchParams({
+      recipient: recipientInput.value.trim().slice(0,100),
+      coins: String(selectedCoins),
+      price: String(selectedPrice),
+      balance: String(newBalance)
+    }).toString();
+
+    // Redirect ke success.html
+    setTimeout(()=> {
+      window.location.href = 'success.html?' + qs;
+    }, 1000);
+  }
+});
+</script>
+</body>
+</html>

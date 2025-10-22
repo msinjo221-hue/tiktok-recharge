@@ -1,0 +1,551 @@
+/* style.css - TikTok-like white UI + slide-up modals + iPhone-style Face ID */
+
+/* ---------- reset & base ---------- */
+:root{
+  --bg:#ffffff;
+  --card:#ffffff;
+  --muted:#8f8f8f;
+  --accent:#fe2c55;
+  --surface:#f7f7f8;
+  --shadow: 0 6px 18px rgba(16,24,40,0.08);
+  --ring-blue: #00b0ff;
+}
+*{box-sizing:border-box;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif}
+html,body{height:100%;margin:0;background:var(--bg);color:#111}
+
+/* ---------- header ---------- */
+.header{
+  width:100%;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:12px 28px;
+  border-bottom:1px solid #eee;
+  position:sticky;
+  top:0;
+  background:var(--bg);
+  z-index:30;
+}
+.logo{display:flex;align-items:center;gap:10px;font-weight:700}
+.logo-img{width:28px;height:28px;object-fit:contain}
+.search-wrap{flex:1;margin:0 18px}
+.search-bar{width:100%;max-width:560px;padding:8px 12px;border-radius:20px;border:1px solid #e6e6e6;background:#fff;outline:none}
+.header-actions .icon-btn{background:transparent;border:0;color:#333;cursor:pointer;padding:6px 10px;border-radius:8px}
+
+/* ---------- container & cards ---------- */
+.container{width:90%;max-width:980px;margin:28px auto;padding-bottom:60px}
+.card{background:var(--card);border-radius:12px;padding:14px;box-shadow:var(--shadow);border:1px solid #f1f1f3}
+
+/* recharge header */
+.recharge-panel{display:flex;flex-direction:column;gap:12px;margin-bottom:18px}
+.recharge-left{display:flex;gap:12px;align-items:center}
+.small-logo img{width:46px;height:46px;border-radius:10px;object-fit:cover}
+.recharge-texts .title{font-size:18px;font-weight:700}
+.balance-row{display:flex;align-items:center;gap:8px;color:#444;font-weight:600;margin-top:2px}
+.mini-coin{width:16px;height:16px;display:inline-block}
+
+/* username row (nama penerima) */
+.username-row{
+  display:flex;
+  gap:8px;
+  margin-top:8px;
+}
+.username-row input{
+  flex:1;
+  padding:10px 12px;
+  border-radius:8px;
+  border:1px solid #e6e6e6;
+  font-size:15px;
+  outline:none;
+}
+.username-row .btn{
+  padding:8px 12px;
+  border-radius:8px;
+  border:1px solid #e6e6e6;
+  background:#fff;
+  cursor:pointer;
+}
+
+/* user profile card (setelah check nama) */
+.user-profile{display:flex;gap:12px;align-items:center;padding:10px;border-radius:10px}
+.avatar{width:56px;height:56px;border-radius:10px;object-fit:cover}
+.profile-meta{display:flex;flex-direction:column}
+.profile-name{font-weight:700}
+.profile-handle{color:var(--muted);font-size:14px}
+.profile-followers{color:var(--muted);font-size:13px;margin-top:6px}
+
+/* small subtext */
+.subtext{font-size:13px;color:var(--muted)}
+
+/* ---------- coin grid ---------- */
+.coin-section{margin-bottom:18px}
+.coin-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-top:12px}
+.coin-card{display:flex;align-items:center;gap:12px;padding:14px;border-radius:10px;border:1px solid #f0f0f2;background:#fff;cursor:pointer;transition:all .18s ease}
+.coin-card .coin-icon{width:40px;height:40px}
+.coin-card .coin-info{display:flex;flex-direction:column}
+.coin-card .coins{font-weight:700}
+.coin-card .price{color:var(--muted);font-size:13px;margin-top:6px}
+.coin-card:hover{transform:translateY(-4px);box-shadow:0 10px 24px rgba(16,24,40,0.06)}
+.coin-card.selected{border-color:rgba(254,44,85,0.15);box-shadow:0 10px 30px rgba(254,44,85,0.06)}
+
+/* custom card */
+.custom-card{display:flex;align-items:center;justify-content:center;font-weight:700}
+
+/* ---------- payment panel ---------- */
+.payment-panel{display:flex;flex-direction:column;gap:12px;padding:14px}
+.pay-icons-row{display:flex;gap:12px;align-items:center}
+.pay-icons-row img{height:32px;object-fit:contain;border-radius:6px}
+.purchase-row{display:flex;justify-content:space-between;align-items:center;margin-top:6px}
+.label{font-size:13px;color:var(--muted)}
+.display-price{font-weight:700;font-size:18px}
+
+/* Tombol Recharge merah khas TikTok */
+.btn{padding:10px 14px;border-radius:8px;border:0;cursor:pointer;background:#fff}
+.btn.primary{
+  background-color:#fe2c55;
+  color:#fff;
+  font-weight:700;
+  border-radius:10px;
+  padding:10px 16px;
+  cursor:pointer;
+  transition:0.25s;
+}
+.btn.primary:hover{
+  background-color:#e0264a;
+}
+
+/* === Modal Payment (slide up) === */
+.slideup {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  background: rgba(0,0,0,0.25);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  z-index: 90;
+}
+
+.slideup.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.slideup .sheet {
+  width: 100%;
+  max-width: 560px;
+  background: #fff;
+  border-radius: 20px 20px 0 0;
+  box-shadow: 0 -6px 24px rgba(0,0,0,0.15);
+  padding: 20px;
+  transform: translateY(100%);
+  transition: transform 0.35s ease;
+}
+
+.slideup.show .sheet {
+  transform: translateY(0);
+}
+
+.sheet-handle {
+  width: 48px;
+  height: 5px;
+  background: #e2e2e2;
+  border-radius: 4px;
+  margin: 0 auto 14px;
+}
+
+.pmethods {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow-y: auto;
+  max-height: 50vh;
+}
+
+.pmethods .pm {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #f8f8f8;
+  padding: 12px 14px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.pmethods .pm:hover { background: #eee; }
+
+.pmethods .pm input[type="radio"] {
+  width: 18px;
+  height: 18px;
+  appearance: none;
+  -webkit-appearance: none;
+  border: 2px solid #ccc;
+  border-radius: 50%;
+  position: relative;
+}
+
+.pmethods .pm input[type="radio"]:checked {
+  border-color: #6e00ff;
+  background: radial-gradient(circle at center, #6e00ff 40%, transparent 41%);
+}
+
+.sheet-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+/* Perbaikan agar Recharge Button aktif */
+#rechargeBtn {
+  pointer-events: auto;
+  opacity: 1;
+}
+
+/* Hidden Modal */
+#paymentModal.hidden { display:none; }
+
+/* Bank Options Animasi */
+.bank-options {
+  opacity: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  margin-top: 6px;
+}
+.bank-options.show {
+  opacity: 1;
+  max-height: 400px;
+}
+.bank-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #f9f9f9;
+  padding: 8px 10px;
+  border-radius: 8px;
+  margin-bottom: 5px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+.bank-item:hover { background: #eee; }
+.transfer-icon {
+  width: 22px;
+  height: auto;
+  margin-right: 5px;
+}
+
+/* Tambahan agar animasi tidak menimpa klik */
+#paymentModal.show {
+  pointer-events:auto;
+}
+
+/* === Payment modal fix === */
+.pmethods {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 55vh;
+  overflow-y: auto;
+}
+.pm {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 12px;
+  background: #f8f8f8;
+}
+.pm-icon {
+  width: 45px;
+  height: 45px;
+  object-fit: contain;
+}
+.transfer-icon {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+}
+.pm-label {
+  font-weight: 600;
+  color: #222;
+}
+
+/* animasi bank option */
+.bank-options {
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  transition: all 0.3s ease;
+  margin-left: 12px;
+}
+.bank-options.show {
+  max-height: 400px;
+  opacity: 1;
+}
+.bank-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #fff;
+  border-radius: 8px;
+  padding: 8px 10px;
+  margin-top: 6px;
+  cursor: pointer;
+  box-shadow: inset 0 0 0 1px #eee;
+}
+.bank-item:hover {
+  background: #f1f1f1;
+}
+.bank-icon {
+  width: 36px;
+  height: auto;
+  object-fit: contain;
+}
+.card-number {
+  font-size: 13px;
+  color: #555;
+  margin: 6px 0 6px 12px;
+}
+
+/* Pay button warna merah ala TikTok */
+.btn.primary {
+  background: #ff004f;
+  color: #fff;
+  font-weight: 600;
+}
+
+/* pastikan bank-options jadi flex saat show, dan default display none */
+.bank-options { display: none; }
+.bank-options.show { display: flex; flex-direction: column; }
+
+/* Pastikan modal payment tampil elegan dan tidak melar */
+.pmethods {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-height: 60vh;
+  overflow-y: auto;
+  padding-right: 6px;
+}
+
+.pm {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 12px;
+  background: #fafafa;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+.pm:hover {
+  background: #f0f0f0;
+}
+.pm img {
+  width: 32px;
+  height: auto;
+}
+
+/* Atur animasi bank options agar muncul lembut */
+.bank-options {
+  display: none;
+  flex-direction: column;
+  gap: 8px;
+  padding-left: 40px;
+  margin-top: 6px;
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(-5px);
+  transition: all 0.35s ease;
+}
+.bank-options.show {
+  display: flex;
+  max-height: 400px;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+#bankOptions {
+  display: none;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: all 0.3s ease;
+}
+#bankOptions.show {
+  max-height: 300px;
+  opacity: 1;
+}
+.bank-item {
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  cursor: pointer;
+  transition: 0.25s;
+}
+.bank-item:hover {
+  background: #f9f9f9;
+}
+.bank-item.active {
+  border-color: #ff3366;
+  background: #fff2f6;
+}
+
+.bank-logo {
+  width: 32px;
+  height: auto;
+  margin-right: 8px;
+}
+
+
+/* === Recipient Input (Elegan) === */
+.recipient-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 15px 0 25px;
+}
+
+.recipient-input-box {
+  position: relative;
+  width: 90%;
+  max-width: 400px;
+}
+
+.recipient-input-box input {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1.5px solid #ddd;
+  border-radius: 12px;
+  font-size: 15px;
+  background-color: #fafafa;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.recipient-input-box label {
+  position: absolute;
+  top: 50%;
+  left: 16px;
+  transform: translateY(-50%);
+  background-color: #fafafa;
+  color: #aaa;
+  font-size: 14px;
+  pointer-events: none;
+  transition: 0.25s ease all;
+}
+
+.recipient-input-box input:focus {
+  border-color: #ff2e55;
+  background-color: #fff;
+}
+
+.recipient-input-box input:focus + label,
+.recipient-input-box input:not(:placeholder-shown) + label,
+.recipient-input-box input:valid + label {
+  top: -8px;
+  left: 12px;
+  font-size: 12px;
+  color: #ff2e55;
+  padding: 0 4px;
+}
+
+.bank-item img {
+  width: 38px;
+  height: 24px;
+  object-fit: contain;
+  vertical-align: middle;
+}
+
+/* Header ala TikTok */
+.tiktok-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 32px;
+  border-bottom: 1px solid #eee;
+  background: #fff;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tiktok-logo {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+}
+
+.tiktok-title {
+  font-family: 'TikTokDisplayFont', sans-serif;
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.chat-icon {
+  width: 22px;
+  height: 22px;
+  cursor: pointer;
+  opacity: 0.85;
+  transition: opacity 0.2s ease;
+}
+
+.chat-icon:hover {
+  opacity: 1;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 15px;
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.muted {
+  color: #555;
+  font-size: 15px;
+}
+
+.balance {
+  display: flex;
+  align-items: center;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+#balanceValue {
+  margin-left: 6px;
+}
+
+input, select, textarea {
+  font-size: 16px !important;
+}
+input::placeholder, select::placeholder, textarea::placeholder {
+  font-size: 16px !important;
+}
